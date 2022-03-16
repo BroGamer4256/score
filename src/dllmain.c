@@ -163,15 +163,15 @@ HOOK (int64_t, __stdcall, Update, 0x140502CA0) {
 
 	sprintf (buf, "%04d", coolCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocX += 150;
+	drawParam.textCurrentLocX += 149;
 
 	sprintf (buf, "%04d", fineCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocX += 153;
+	drawParam.textCurrentLocX += 155;
 
 	sprintf (buf, "%04d", safeCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocX += 147;
+	drawParam.textCurrentLocX += 146;
 
 	sprintf (buf, "%04d", sadCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
