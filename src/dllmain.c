@@ -94,7 +94,8 @@ FUNCTION_PTR (int32_t, __stdcall, DrawAet, 0x14013BE60, int32_t fileId,
 			  const void *callback);
 FUNCTION_PTR (void, __stdcall, DestroyAet, 0x14019D570, int32_t *aet);
 HOOK (int64_t, __stdcall, Update, 0x140502CA0) {
-	if (*(uint32_t *)0x140EDA82C != 13) {
+	/* Check if in game and not in pv mode */
+	if (*(uint32_t *)0x140EDA82C != 13 || *(uint8_t *)0x141197E15 != 0) {
 		if (coolAet != 0 || fineAet != 0 || safeAet != 0 || sadAet != 0
 			|| worstAet != 0) {
 			DestroyAet (&coolAet);
@@ -122,24 +123,17 @@ HOOK (int64_t, __stdcall, Update, 0x140502CA0) {
 	struct FontInfo fontInfo;
 	fontInfo = *GetFontInfoFromID (&fontInfo, 0x11);
 	struct Point location;
-	location.x = 80;
-	location.y = 160;
+	location.x = 200;
+	location.y = 738;
 	struct DrawParams drawParam = { 0 };
 	drawParam.colour = 0xC0000000;
 	drawParam.fillColour = 0xC0000000;
 	drawParam.layer = 0x18;
 	drawParam.unk24 = 0xD;
-	drawParam.textCurrentLocX = 150;
-	drawParam.textCurrentLocY = 70;
+	drawParam.textCurrentLocX = 250;
+	drawParam.textCurrentLocY = 648;
 	drawParam.font = &fontInfo;
 	drawParam.unk50 = 0x25A1;
-
-	struct Rectangle rect = { 0 };
-	rect.x = 0;
-	rect.y = 60;
-	rect.width = 220;
-	rect.height = 200;
-	FillRectangle (&drawParam, &rect);
 
 	drawParam.layer = 0x19;
 	drawParam.colour = 0xFFFFFFFF;
@@ -148,42 +142,42 @@ HOOK (int64_t, __stdcall, Update, 0x140502CA0) {
 		|| worstAet == 0) {
 		coolAet = DrawAet (3, drawParam.layer, 0x20000, "value_text_cool01",
 						   &location, 0, 0, 0, 0, 0, 0, 0);
-		location.y += 40;
+		location.x += 150;
 
 		fineAet = DrawAet (3, drawParam.layer, 0x20000, "value_text_fine01",
 						   &location, 0, 0, 0, 0, 0, 0, 0);
-		location.y += 40;
+		location.x += 150;
 
 		safeAet = DrawAet (3, drawParam.layer, 0x20000, "value_text_safe",
 						   &location, 0, 0, 0, 0, 0, 0, 0);
-		location.y += 40;
+		location.x += 150;
 
 		sadAet = DrawAet (3, drawParam.layer, 0x20000, "value_text_sad",
 						  &location, 0, 0, 0, 0, 0, 0, 0);
-		location.y += 40;
+		location.x += 180;
 
 		worstAet = DrawAet (3, drawParam.layer, 0x20000, "value_text_worst",
 							&location, 0, 0, 0, 0, 0, 0, 0);
 	}
 	char buf[32];
 
-	sprintf (buf, "%d", coolCount);
+	sprintf (buf, "%04d", coolCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocY += 40;
+	drawParam.textCurrentLocX += 150;
 
-	sprintf (buf, "%d", fineCount);
+	sprintf (buf, "%04d", fineCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocY += 40;
+	drawParam.textCurrentLocX += 153;
 
-	sprintf (buf, "%d", safeCount);
+	sprintf (buf, "%04d", safeCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocY += 40;
+	drawParam.textCurrentLocX += 147;
 
-	sprintf (buf, "%d", sadCount);
+	sprintf (buf, "%04d", sadCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
-	drawParam.textCurrentLocY += 40;
+	drawParam.textCurrentLocX += 210;
 
-	sprintf (buf, "%d", worstCount);
+	sprintf (buf, "%04d", worstCount);
 	DivaDrawText (&drawParam, 0x1000, buf, 32);
 
 	return originalUpdate ();
@@ -194,6 +188,9 @@ DllMain (HMODULE mod, DWORD cause, void *ctx) {
 	if (cause != DLL_PROCESS_ATTACH)
 		return 1;
 
+	/* Disable lyrics */
+	WRITE_MEMORY (0x1404E7A25, uint8_t, 0xC0, 0xD3);
+	WRITE_MEMORY (0x1404E7950, uint8_t, 0x48, 0xE9);
 	INSTALL_HOOK (Update);
 
 	return 1;
